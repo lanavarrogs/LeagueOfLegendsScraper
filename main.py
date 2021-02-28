@@ -58,7 +58,17 @@ def get_info_champions(table_champions,league_name):
                 info['champion'] = tds[0].text
             if not tds[1].text in positions:
                 info['games'] = tds[1].text
+            if not tds[2].text in positions:
+                presence = tds[2].text.replace('%','')
+                presence = float(presence)
+                presence = presence/100
+                info['prescence'] = presence
+            if not tds[3].text in positions:
+                info['bans'] = tds[3].text
+            if not tds[4].text in positions:
+                info['picks'] = tds[4].text
             if len(tds) >5:
+                info['byteam'] = tds[5].text
                 info['wins'] = tds[6].text
                 info['losses'] = tds[7].text
                 winrate = tds[8].text
@@ -148,7 +158,7 @@ try:
     get_info_draft(tbl,leagues[2])
     champions_button = driver.find_element(By.PARTIAL_LINK_TEXT,'Champion Stats')
     champions_button.click()
-    content = driver.page_sources
+    content = driver.page_source
     soup = BeautifulSoup(content,'lxml')
     tbl=soup.find('table',attrs={'class': 'wikitable'})
     get_info_champions(tbl,leagues[2])

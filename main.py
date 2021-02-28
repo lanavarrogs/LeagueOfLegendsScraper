@@ -1,9 +1,8 @@
+from os import kill
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup 
 import pandas as pd
-
-
 
 def get_info_draft(table_draft,league_name):
     data = []
@@ -46,33 +45,90 @@ def get_info_draft(table_draft,league_name):
     except Exception as e:
         print(f"Error: {e}")
 
-def get_info_champions(table_champions):
+def get_info_champions(table_champions,league_name):
     data = []
     info = {}
     positions = ['Top','Mid','Jungle','Bot','Support'] 
     try:
         for tr in table_champions.find_all("tr"):
-            tds = tr.find_all('td')
-            if not tds :
+            tds = tr.find_all("td")
+            if not tds:
                 continue
             if not tds[0].text in positions:
-                info['champion']= tds[0].text
+                info['champion'] = tds[0].text
             if not tds[1].text in positions:
                 info['games'] = tds[1].text
-            if not tds[2].text in positions:
-                info['bans'] = tds[2].text
-            if not tds[4].text in positions:
-                info['picks'] = tds[4].text
-            info['wins'] = tds[6].text
-            info['losses'] = tds[7].text
-            winrate = tds[7].text.replace('%')
-            print(winrate)
+            if len(tds) >5:
+                info['wins'] = tds[6].text
+                info['losses'] = tds[7].text
+                winrate = tds[8].text
+                if winrate == '-':
+                    info['winrate'] = None
+                else:
+                    info['winrate'] = winrate.replace('%','')
+                if tds[9].text == '-':
+                    info['kills'] = None
+                else:
+                    info['kills'] = float(tds[9].text)
+                if tds[10].text == '-':
+                    info['deaths'] =None
+                else:    
+                    info['deaths'] = float(tds[10].text)
+                if tds[11].text == '-':
+                    info['assists'] = None
+                else:
+                    info['assists'] = tds[11].text
+                if tds[12].text == '-':
+                    info['kda'] = None
+                else:
+                    info['kda'] = tds[12].text
+                if tds[13].text == '-':
+                    info['cs'] = None
+                else:
+                    info['cs'] = float(tds[13].text)
+                if tds[14].text == '-':
+                    info['cspm'] = None
+                else:
+                    info['cspm'] = float(tds[14].text)
+                if tds[15].text == '-':
+                    info['gold'] = None
+                else:
+                    gold = tds[15].text
+                    info['gold'] = gold.replace('k','')
+                if tds[16].text == '-':
+                    info['gpm'] = None
+                else:
+                    info['gpm'] = float(tds[16].text)
+                if tds[17].text == '-':
+                    info['killpart'] = None
+                else:
+                    killpart = tds[17].text.replace('%','')
+                    killpart = float(killpart)
+                    killpart = killpart/100
+                    info['killpart'] = killpart
+                if tds[18].text == '-':
+                    info['killshare'] = None
+                else:
+                    killshare = tds[18].text.replace('%','')
+                    killshare = float(killshare)
+                    killshare = killshare/100
+                    info['killshare'] = killshare
+                if tds[19].text == '-':
+                    info['goldshare'] = None
+                else:
+                    goldshare = tds[19].text.replace('%','')
+                    goldshare = float(goldshare)
+                    goldshare = goldshare/100
+                    info['goldshare'] = goldshare
             if info:
                 data.append(info.copy())
+        name = league_name +'_champstats.csv'
+        df = pd.DataFrame(data)
+        df.to_csv(name)
     except Exception as e:
         print(f"Error: {e}")
 
-    
+
 
 driver=webdriver.Chrome("/usr/bin/chromedriver")
 url = 'https://lol.gamepedia.com/League_of_Legends_Esports_Wiki'
@@ -92,10 +148,10 @@ try:
     get_info_draft(tbl,leagues[2])
     champions_button = driver.find_element(By.PARTIAL_LINK_TEXT,'Champion Stats')
     champions_button.click()
-    content = driver.page_source
+    content = driver.page_sources
     soup = BeautifulSoup(content,'lxml')
     tbl=soup.find('table',attrs={'class': 'wikitable'})
-    get_info_champions(tbl)
+    get_info_champions(tbl,leagues[2])
 except Exception as e:
     print(f"Error {e}")
 

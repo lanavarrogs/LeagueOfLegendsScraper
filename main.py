@@ -1,4 +1,3 @@
-from os import kill
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup 
@@ -132,7 +131,7 @@ def get_info_champions(table_champions,league_name):
                     info['goldshare'] = goldshare
             if info:
                 data.append(info.copy())
-        name = league_name +'_champstats.csv'
+        name = './datasets/champstats/'+league_name +'_champstats.csv'
         df = pd.DataFrame(data)
         df.to_csv(name)
     except Exception as e:

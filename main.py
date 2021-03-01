@@ -39,7 +39,7 @@ def get_info_draft(table_draft,league_name):
             info['RP5'] = td[21].get('data-c1')
             data.append(info.copy())
         df = pd.DataFrame(data)
-        name = league_name +'_draft.csv'
+        name ='./datasets/draft/'+league_name +'_draft.csv'
         df.to_csv(name)
     except Exception as e:
         print(f"Error: {e}")

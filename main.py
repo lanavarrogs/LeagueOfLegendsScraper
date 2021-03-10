@@ -146,23 +146,25 @@ links = driver.find_element_by_id('p-2021_Season-list')
 link_list = links.text
 leagues = link_list.split('\n')
 
-try:
-    boton = driver.find_element(By.PARTIAL_LINK_TEXT,leagues[2])
-    boton.click()
-    picks_bans_button = driver.find_element(By.PARTIAL_LINK_TEXT,'Picks & Bans')
-    picks_bans_button.click()
-    content = driver.page_source
-    soup = BeautifulSoup(content,'lxml')
-    tbl=soup.find('table',attrs={'id': 'pbh-table'})
-    get_info_draft(tbl,leagues[2])
-    champions_button = driver.find_element(By.PARTIAL_LINK_TEXT,'Champion Stats')
-    champions_button.click()
-    content = driver.page_source
-    soup = BeautifulSoup(content,'lxml')
-    tbl=soup.find('table',attrs={'class': 'wikitable'})
-    get_info_champions(tbl,leagues[2])
-except Exception as e:
-    print(f"Error {e}")
+
+for i in range(0,len(leagues)):
+    try:
+        boton = driver.find_element(By.PARTIAL_LINK_TEXT,leagues[i])
+        boton.click()
+        picks_bans_button = driver.find_element(By.PARTIAL_LINK_TEXT,'Picks & Bans')
+        picks_bans_button.click()
+        content = driver.page_source
+        soup = BeautifulSoup(content,'lxml')
+        tbl=soup.find('table',attrs={'id': 'pbh-table'})
+        get_info_draft(tbl,leagues[i])
+        champions_button = driver.find_element(By.PARTIAL_LINK_TEXT,'Champion Stats')
+        champions_button.click()
+        content = driver.page_source
+        soup = BeautifulSoup(content,'lxml')
+        tbl=soup.find('table',attrs={'class': 'wikitable'})
+        get_info_champions(tbl,leagues[i])
+    except Exception as e:
+        print(f"Error {e}")
 
 
 driver.close()
